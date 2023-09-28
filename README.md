@@ -48,7 +48,7 @@ The constructor for `SMTPServer` accepts an options object.
 | `hostname`     | `localhost`   | Hostname advertised by the SMTP server.                                                                                  |
 | `size`         | `1000000`     | Maximum message size (in bytes).                                                                                         |
 | `tls`          | `undefined`   | [createSecureContext options](https://nodejs.org/api/tls.html#tls_tls_createsecurecontext_options) for STARTTLS support. |
-| `tlsPost`      | `465`         | Port for secure only communication, only enabled if `tls` is configured properly.                                        |
+| `tlsPort`      | `465`         | Port for secure only communication, only enabled if `tls` is configured properly.                                        |
 | `authenticate` | `undefined`   | Authentication function. See [Authentication](#Authentication) for more details.                                         |
 | `authMethods`  | `undefined`   | Array of authentication method strings. See [Authentication](#Authentication) for more details.                          |
 
