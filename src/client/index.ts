@@ -9,7 +9,7 @@ import { SMTPClientOptions, SMTPClientSecure } from './options.js';
 
 const defaultSize = 1000000;
 
-type EventName = 'ready';
+type EventName = 'ready' | 'error';
 
 export declare interface SMTPClient {
   on(event: 'error', listener: () => void): this;
@@ -61,8 +61,33 @@ export class SMTPClient extends EventEmitter {
     this.wire = new Wire(this.socket);
   }
 
+  get connected() {
+    return this.wire.readable;
+  }
+
   close(): void {
     this.wire.close();
+  }
+
+  connect(): Promise<void> {
+    if (this.connected) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve, reject) => {
+      const onReady = () => {
+        resolve();
+        this.removeListener('error', onError);
+      };
+
+      const onError = () => {
+        reject();
+        this.removeListener('ready', onReady);
+      };
+
+      this.once('ready', onReady);
+      this.once('error', onError);
+    });
   }
 
   private async smtpRead(): Promise<[number, string[]]> {
