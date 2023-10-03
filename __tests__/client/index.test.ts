@@ -7,7 +7,7 @@ let server: SMTPServer;
 describe('client', () => {
   // TODO: TLS tests
   // TODO: Error handling tests
-  // TODO:  Auth tests
+  // TODO: Auth tests
   // TODO: Capability tests
   // TODO: Greeting tests
 
@@ -19,7 +19,7 @@ describe('client', () => {
   });
 
   describe('SMTPClient', () => {
-    it('sends emails', () => {
+    it('should send a message: events', () => {
       const message = {
         sender: 'a@localhost',
         recipients: ['b@localhost'],
@@ -40,10 +40,34 @@ describe('client', () => {
         });
       });
     });
+
+    it('should send a message: async/await', () => {
+      const message = {
+        sender: 'a@localhost',
+        recipients: ['b@localhost'],
+        message: 'Test',
+      };
+
+      return new Promise(resolve => {
+        server.once('connection', connection => {
+          connection.on('message', msg => {
+            expect(msg).toMatchObject(message);
+            resolve(true);
+          });
+        });
+
+        const fn = async () => {
+          const client = new SMTPClient({ hostname: HOST, port: PORT });
+          await client.connect();
+          client.mail(message);
+        };
+        fn();
+      });
+    });
   });
 
   describe('sendmail', () => {
-    it('sends emails', () => {
+    it('should send a message', () => {
       const message = {
         sender: 'a@localhost',
         recipients: ['b@localhost'],

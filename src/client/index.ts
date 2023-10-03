@@ -45,6 +45,7 @@ export class SMTPClient extends EventEmitter {
   private wire: Wire;
   private capabilities: string[] = [];
   private maxSize = defaultSize;
+  private welcomed = false;
 
   constructor(options: SMTPClientOptions) {
     super();
@@ -62,7 +63,7 @@ export class SMTPClient extends EventEmitter {
   }
 
   get connected() {
-    return this.wire.readable;
+    return this.wire.readable && this.welcomed;
   }
 
   close(): void {
@@ -120,6 +121,7 @@ export class SMTPClient extends EventEmitter {
   }
 
   private async init() {
+    this.welcomed = false;
     const welcome = await this.smtpRead();
     if (welcome[0] !== 220) {
       throw new Error(
@@ -142,6 +144,7 @@ export class SMTPClient extends EventEmitter {
       await this.smtpSend('HELO');
     }
 
+    this.welcomed = true;
     this.emit('ready');
   }
 
@@ -160,14 +163,10 @@ export class SMTPClient extends EventEmitter {
   }
 }
 
-function sendTo(options: SMTPClientOptions, message: SMTPMessage) {
-  return new Promise((resolve, reject) => {
-    const client = new SMTPClient(options);
-    client.once('error', reject);
-    client.on('ready', () => {
-      client.mail(message).then(resolve).catch(reject);
-    });
-  });
+async function sendTo(options: SMTPClientOptions, message: SMTPMessage) {
+  const client = new SMTPClient(options);
+  await client.connect();
+  await client.mail(message);
 }
 
 function mx(hostname: string): Promise<string> {
