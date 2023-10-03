@@ -242,7 +242,7 @@ export class SMTPServerConnection extends EventEmitter {
     });
   }
 
-  get open() {
+  get connected() {
     return this.wire.readable;
   }
 

@@ -157,7 +157,7 @@ export class SMTPServer extends EventEmitter {
     clearInterval(this.interval);
 
     this.connections.forEach(connection => {
-      if (connection.open) {
+      if (connection.connected) {
         connection.reply(...SERVER_SHUTTING_DOWN);
         connection.close();
       }
@@ -178,7 +178,7 @@ export class SMTPServer extends EventEmitter {
 
   private pruneConnections() {
     this.connections.forEach(connection => {
-      if (!connection.open) {
+      if (!connection.connected) {
         this.connections.delete(connection);
       }
     });

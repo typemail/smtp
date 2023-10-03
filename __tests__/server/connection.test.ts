@@ -70,7 +70,7 @@ describe('connection', () => {
 
     await socket.waitForDestroy();
     expect(destroy).toHaveBeenCalled();
-    expect(connection.open).toEqual(false);
+    expect(connection.connected).toEqual(false);
   });
 
   it('handles command: HELO', async () => {
