@@ -13,7 +13,7 @@
 
 @typemail/smtp is an SMTP library for node.js.
 
-## Usage:
+## Usage
 
-- [Client]('./docs/client.md')
-- [Server]('./docs/server.md')
+- [Client](./docs/client.md)
+- [Server](./docs/server.md)
