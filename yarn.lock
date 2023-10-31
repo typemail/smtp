@@ -1697,10 +1697,10 @@ std-env@^3.3.3:
   resolved "https://registry.yarnpkg.com/std-env/-/std-env-3.4.3.tgz#326f11db518db751c83fd58574f449b7c3060910"
   integrity sha512-f9aPhy8fYBuMN+sNfakZV18U39PbalgjXG3lLB9WkaYTxijru61wb57V9wxxNthXM5Sd88ETBWi29qLAsHO52Q==
 
-streamwire@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/streamwire/-/streamwire-1.0.0.tgz#956a881917d019a82a4324c76c33c4a1124bafea"
-  integrity sha512-IWfKCGwRL6Lv80/KjJCg+RBfbU6szSxlO/Z2Hpgapsy4z0j1tIXShkS7Kw41deXffweity21/n64K/GuymDP4Q==
+streamwire@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/streamwire/-/streamwire-1.0.2.tgz#dd5f82b5bc7ba4343dd3f24ca39d27960d90c68e"
+  integrity sha512-X8UlR7OGGetruXKmOpvvDnwX7BzAzGulYhwCuxWAawl2yMC2gIyzrcUgJoM9BZvO8sSxE2KYAPh9ZpHwy+adHw==
 
 string-argv@^0.3.1:
   version "0.3.1"
