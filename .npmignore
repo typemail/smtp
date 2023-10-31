@@ -11,3 +11,4 @@ coverage
 vite*js
 vitest.config.ts
 .eslintrc.json
+docs

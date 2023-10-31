@@ -208,6 +208,7 @@ export class SMTPServerConnection extends EventEmitter {
   private recipients: string[] = [];
   private sender?: string;
   private wire: Wire;
+  private maxSize = defaultSize;
 
   /**
    * Connection state, can be used to store authentication data.
@@ -223,7 +224,9 @@ export class SMTPServerConnection extends EventEmitter {
   constructor(private socket: Socket, private options: SMTPServerOptions) {
     super();
 
-    this.options.size ??= defaultSize;
+    if (this.options.size) {
+      this.maxSize = this.options.size;
+    }
     this.wire = new Wire(socket);
 
     // Welcome message.
@@ -233,12 +236,14 @@ export class SMTPServerConnection extends EventEmitter {
     this.wire.on('close', () => this.handleClose());
 
     this.wire.on('readable', async () => {
-      const line = await this.wire.readLine();
-      const command = line.split(' ', 1)[0];
-      await this.handleCommand(
-        command.toUpperCase(),
-        line.substring(command.length + 1)
-      );
+      try {
+        const line = await this.wire.readLine();
+        const command = line.split(' ', 1)[0];
+        await this.handleCommand(
+          command.toUpperCase(),
+          line.substring(command.length + 1)
+        );
+      } catch {}
     });
   }
 
@@ -255,28 +260,32 @@ export class SMTPServerConnection extends EventEmitter {
   }
 
   reply(code: number, message?: string) {
-    if (!message) {
-      this.wire.writeLine(`${code}`);
-      return;
-    }
-
-    if (message.includes('\n')) {
-      const lines = message.split('\n');
-      for (let i = 0; i < lines.length; i++) {
-        if (i === lines.length - 1) {
-          this.wire.writeLine(`${code} ${lines[i]}`);
-        } else {
-          this.wire.writeLine(`${code}-${lines[i]}`);
-        }
+    try {
+      if (!message) {
+        this.wire.writeLine(`${code}`);
+        return;
       }
-    } else {
-      this.wire.writeLine(`${code} ${message}`);
-    }
 
-    // 5xx errors result in an ended connection.
-    if (code >= 500) {
-      this.close();
-    }
+      if (message.includes('\n')) {
+        const lines = message.split('\n');
+        for (let i = 0; i < lines.length; i++) {
+          if (i === lines.length - 1) {
+            this.wire.writeLine(`${code} ${lines[i]}`);
+          } else {
+            this.wire.writeLine(`${code}-${lines[i]}`);
+          }
+        }
+      } else {
+        this.wire.writeLine(`${code} ${message}`);
+      }
+    } catch {}
+
+    try {
+      // 5xx errors result in an ended connection.
+      if (code >= 500) {
+        this.close();
+      }
+    } catch {}
   }
 
   async challenge(
@@ -308,7 +317,7 @@ export class SMTPServerConnection extends EventEmitter {
       extensions.push('AUTH ' + this.authMethods.join(' '));
     }
 
-    extensions.push('SIZE ' + (this.options.size ?? defaultSize));
+    extensions.push('SIZE ' + this.maxSize);
 
     return extensions;
   }
@@ -462,7 +471,7 @@ export class SMTPServerConnection extends EventEmitter {
             size = parseInt(args['SIZE']);
           }
 
-          if (size && size > (this.options.size ?? defaultSize)) {
+          if (size && size > this.maxSize) {
             this.reply(...SMTPReply.MAXIMUM_SIZE_EXCEEDED);
             this.emit('rejectedMessage', sender, this.recipients);
             break;
@@ -493,7 +502,7 @@ export class SMTPServerConnection extends EventEmitter {
           try {
             data = await this.wire.readUntil(
               ending + SMTPReply.SMTP_MAIL_ENDING_LINE + ending,
-              { maxLength: this.options.size }
+              { maxLength: this.maxSize }
             );
           } catch {
             this.reply(...SMTPReply.MAXIMUM_SIZE_EXCEEDED);
