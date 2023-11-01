@@ -20,5 +20,5 @@ export interface SMTPServerOptions {
     payload?:
       | { username: string; password: string; identity?: string }
       | string[]
-  ) => Promise<boolean>;
+  ) => boolean | Promise<boolean>;
 }
