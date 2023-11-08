@@ -293,9 +293,13 @@ export class SMTPServerConnection extends EventEmitter {
     plaintextMessage = false,
     plaintextReply = false
   ): Promise<string> {
-    this.reply(334, plaintextMessage ? message : base64Encode(message));
-    const reply = await this.wire.readLine();
-    return plaintextReply ? reply : base64Decode(reply);
+    try {
+      this.reply(334, plaintextMessage ? message : base64Encode(message));
+      const reply = await this.wire.readLine();
+      return plaintextReply ? reply : base64Decode(reply);
+    } catch {
+      return '';
+    }
   }
 
   private get authMethods() {
