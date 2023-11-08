@@ -303,7 +303,7 @@ export class SMTPServerConnection extends EventEmitter {
       return [];
     }
 
-    return ['PLAIN', 'LOGIN'];
+    return this.options.authMethods;
   }
 
   private get extensions() {
