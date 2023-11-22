@@ -303,6 +303,7 @@ export class SMTPServerConnection extends EventEmitter {
     try {
       this.reply(334, plaintextMessage ? message : base64Encode(message));
       const reply = await this.wire.readLine();
+      console.log('[SMTP IN]', reply);
       return plaintextReply ? reply : base64Decode(reply);
     } catch {
       return '';
