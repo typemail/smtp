@@ -10,6 +10,7 @@ export interface SMTPClientOptions {
   port: number;
   secure?: SMTPClientSecure;
   rejectUnauthorized?: boolean;
+  logging?: boolean;
 
   // TODO: Authentication
 }

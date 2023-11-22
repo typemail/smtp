@@ -47,7 +47,7 @@ export class SMTPClient extends EventEmitter {
   private maxSize = defaultSize;
   private welcomed = false;
 
-  constructor(options: SMTPClientOptions) {
+  constructor(private options: SMTPClientOptions) {
     super();
 
     if (options.secure === SMTPClientSecure.TLS) {
@@ -95,6 +95,10 @@ export class SMTPClient extends EventEmitter {
     const lines: string[] = [];
     while (true) {
       const line = await this.wire.readLine();
+      if (this.options.logging) {
+        console.log('[SMTP IN]', line);
+      }
+
       const code = parseInt(line.split('-')[0].split(' ')[0]);
       if (!code || line.length < 4) {
         throw new Error('Invalid server response.');
@@ -109,6 +113,10 @@ export class SMTPClient extends EventEmitter {
   }
 
   private async smtpSend(str: string, expectedCode = 250) {
+    if (this.options.logging) {
+      console.log('[SMTP OUT]', str);
+    }
+
     // TODO: use .wait()
     this.wire.writeLine(str.split('\r').join('').split('\n').join('\r\n'));
     const response = await this.smtpRead();

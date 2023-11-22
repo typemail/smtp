@@ -263,7 +263,9 @@ export class SMTPServerConnection extends EventEmitter {
   }
 
   reply(code: number, message?: string) {
-    console.log('[SMTP OUT]', code, message);
+    if (this.options.logging) {
+      console.log('[SMTP OUT]', code, message);
+    }
 
     try {
       if (!message) {
