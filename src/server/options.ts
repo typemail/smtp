@@ -14,6 +14,7 @@ export interface SMTPServerOptions {
   secureMode?: SMTPServerSecureMode;
   secureContext?: SecureContext;
   authMethods?: string[];
+  logging?: boolean;
   authenticate?: (
     connection: SMTPServerConnection,
     method?: string,

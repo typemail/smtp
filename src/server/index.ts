@@ -88,6 +88,7 @@ export class SMTPServer extends EventEmitter {
     hostname: 'localhost',
     size: 10000000,
     authMethods: [],
+    logging: false,
   };
 
   get address() {

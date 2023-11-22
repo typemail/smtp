@@ -238,6 +238,9 @@ export class SMTPServerConnection extends EventEmitter {
     this.wire.on('readable', async () => {
       try {
         const line = await this.wire.readLine();
+        if (this.options.logging) {
+          console.log('[SMTP IN]', line);
+        }
         const command = line.split(' ', 1)[0];
         await this.handleCommand(
           command.toUpperCase(),
@@ -260,6 +263,8 @@ export class SMTPServerConnection extends EventEmitter {
   }
 
   reply(code: number, message?: string) {
+    console.log('[SMTP OUT]', code, message);
+
     try {
       if (!message) {
         this.wire.writeLine(`${code}`);
